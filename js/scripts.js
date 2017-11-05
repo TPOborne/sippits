@@ -3,17 +3,34 @@ $(document).ready(function() {
         event.preventDefault();
         var gameCode = $("#gameCode").val();
         var name = $("#name").val();
-        var data = {gameCode: gameCode, name: name};
+        var action = "joinGame";
+        var data = {action: action, gameCode: gameCode, name: name};
         $.ajax({
             url: "php/dbc.php",
             type: "post",
             data: data ,
-            success: function (response) {
-               // you will get response from your php page (what you echo or print)                 
+            success: function (response) { 
+                if (response == "success") {
+                    console.log(response);
+                } else {
+                    console.log("Error: " + response);
+                }
+            }
+        });
+    });
+    
+    $("#createGame").click(function(event) {
+        event.preventDefault();
+        var gameCode = $("#gameCode").val();
+        var name = $("#name").val();
+        var action = "createGame";
+        var data = {action: action, gameCode: gameCode, name: name};
+        $.ajax({
+            url: "php/dbc.php",
+            type: "post",
+            data: data ,
+            success: function (response) {             
                 console.log(response);
-            },
-            error: function(response) {
-               console.log(response);
             }
         });
     });
