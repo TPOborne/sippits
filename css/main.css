@@ -14,8 +14,24 @@ html, body {
 }
 
 .waitingRoom {
-    background: #33bf6a;
     height: 100%;
     padding: 10px;
+    background: #33bf6a;
+    display: none;
+}
+
+.nightMode {
+    height: 100%;
+    padding: 10px;
+    background: #111;
+    color: #fff;
+    display: none;
+}
+
+.dayMode {
+    height: 100%;
+    padding: 10px;
+    background: #33B0FF;
+    color: #000;
     display: none;
 }

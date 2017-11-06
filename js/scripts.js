@@ -7,6 +7,7 @@ function playerObj(id, name) {
 }
 
 $(document).ready(function() {
+    
     $("#joinGame").click(function(event) {
         event.preventDefault();
         var gameCode = $("#gameCode").val();
@@ -16,7 +17,7 @@ $(document).ready(function() {
         $.ajax({
             url: "php/dbc.php",
             type: "post",
-            data: data ,
+            data: data,
             success: function (response) { 
                 if (response == "success") {
                     console.log(response);

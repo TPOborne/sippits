@@ -35,6 +35,12 @@
                     
                 </ul>
             </div>
+            
+            <div class="nightMode">
+            </div>
+            
+            <div class="dayMode">
+            </div>
         </div>
         
         <script src="js/scripts.js"></script>
