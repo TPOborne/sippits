@@ -26,6 +26,9 @@ if (!isset($_POST['action'])) {
                 $_SESSION["gameId"] = $gameId;
                 $_SESSION["name"] = $name;
                 echo "success";
+                //insert into players
+                $sql = "INSERT INTO players (game_id, player_name) VALUES ('$gameId', '$name')";
+                $con->query($sql) or die(mysqli_error($con));
             }
         }
     }
