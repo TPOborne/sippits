@@ -14,19 +14,27 @@
     </head>
     <body>
         <div class="contents">
-            <h2>Sippits</h2>
-            <form>
-              <div class="form-group">
-                <label for="gameCode">Game Code</label>
-                <input type="text" class="form-control" id="gameCode" placeholder="ABC123">
-              </div>
-              <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" class="form-control" id="name">
-              </div>
-              <button type="submit" class="btn btn-primary" id="joinGame">Join</button>
-              <button type="submit" class="btn btn-primary" id="createGame">Create</button>
-            </form>
+            <div class="loginContainer">
+                <h2>Sippits</h2>
+                <form>
+                  <div class="form-group">
+                    <label for="gameCode">Game Code</label>
+                    <input type="text" class="form-control" id="gameCode" placeholder="ABC123">
+                  </div>
+                  <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name">
+                  </div>
+                  <button type="submit" class="btn btn-primary" id="joinGame">Join</button>
+                  <button type="submit" class="btn btn-primary" id="createGame">Create</button>
+                </form>
+            </div>
+            <div class="waitingRoom">
+                <h2 class="gameCodeWR"></h2>
+                <ul class="players list-group">
+                    
+                </ul>
+            </div>
         </div>
         
         <script src="js/scripts.js"></script>
