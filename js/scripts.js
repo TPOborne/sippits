@@ -1,5 +1,6 @@
 var players = [];
 var previousPlayers = [];
+var checkForUpdates = false;
 
 function playerObj(id, name) {
   this.id = id;
@@ -10,6 +11,10 @@ $(document).ready(function() {
     
     $("#joinGame").click(function(event) {
         event.preventDefault();
+        joinGame();
+    });
+    
+    var joinGame = function() {
         var gameCode = $("#gameCode").val();
         var name = $("#name").val();
         var action = "joinGame";
@@ -21,17 +26,23 @@ $(document).ready(function() {
             success: function (response) { 
                 if (response == "success") {
                     console.log(response);
-                    $(".gameCodeWR").text(gameCode);
+                    var code = "";
+                    if ($("#hiddenGameCode") == "") {
+                        code = gameCode;
+                    } else {
+                        code = $("#hiddenGameCode").val();
+                    }
+                    $(".gameCodeWR").text(code);
                     $(".loginContainer").slideUp();
                     $(".waitingRoom").slideDown();
+                    checkForUpdates = true;
                     getPlayers();
                 } else {
                     console.log("Error: " + response);
                 }
             }
         });
-    });
-    
+    };
     
     var getPlayers = function() {
         var action = "getPlayers";
@@ -79,14 +90,25 @@ $(document).ready(function() {
             type: "post",
             data: data ,
             success: function (response) {             
-                console.log(response);
+                if (response == "success") {
+                    console.log(response);
+                    $(".gameCodeWR").text(gameCode);
+                    $(".loginContainer").slideUp();
+                    $(".waitingRoom").slideDown();
+                    checkForUpdates = true;
+                    getPlayers();
+                } else {
+                    console.log("Error: " + response);
+                }
             }
         });
     });
     
     window.setInterval(function() {
-        getPlayers();
-    }, 1000);
+        if (checkForUpdates) {
+            getPlayers();
+        }
+    }, 5000);
 });
 
 
