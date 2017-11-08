@@ -1,0 +1,30 @@
+{% set pageType = pageType | default('page') %}
+{% set pageTitle = pageTitle | default(pageType) | replace('_', ' ') | capitalize %}
+
+{%- set stylesheet -%}{{- pageType | getFirstWord('_') -}}{%- endset -%}
+
+{% set activePage = activePage | default('home') %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/css/font-awesome/font-awesome.css" />
+    <link rel="stylesheet" href="/css/core.css">
+    {% block head %}{% endblock %}
+  </head>
+
+  <body class="{{pageType}}">
+    {# body content #}
+    {% block body %}{% endblock %}
+
+    {# scripts #}
+    {% block scripts %}
+      <script type="text/javascript" src='/scripts/core.js'></script>
+    {% endblock %}
+  </body>
+</html>
