@@ -1,5 +1,6 @@
 module.exports = app => {
-  const db = require('../helpers/database');
+  const db = require('../helpers/database')
+        HomeModel = require('../models/home');
 
 
   /**
@@ -16,30 +17,25 @@ module.exports = app => {
       return false;
     }
 
-    return db.query('SELECT * FROM games WHERE game_code = ?', [gameCode])
-      .then( result => {
-        let gameData = result[0];
-
+    return HomeModel.getGameIdByCode(gameCode)
+      .then(gameData => {
         if ( !gameData || !gameData.game_id ) {
           return res.send('Invalid Game Code');
         }
 
         req.session.gameId = gameData.game_id;
-
-        return db.query('INSERT INTO players (game_id, player_name) VALUES (?, ?)', [gameData.game_id, name])
-          .then( () => {
-            return res.send('success');
-          })
+        HomeModel.insertNewPlayer(gameData.game_id, name).then( () => { return res.send('success')} );
       })
   });
 
   app.get('/getPlayers', (req, res, next) => {
     let gameId = req.session.gameId;
 
-    db.query('SELECT * FROM players WHERE game_id = ?', [gameId])
+    return HomeModel.getPlayerDataById(gameId)
       .then( result => {
         return res.send(JSON.stringify(result));
-      });
+      })
+    
   });
 
   app.post('/create', (req, res, next) => {
