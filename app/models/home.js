@@ -25,3 +25,15 @@ exports.getGameCodeById = (gameId) => {
 exports.insertNewPlayer = (gameId, playerName) => {
     return db.query('INSERT INTO players (game_id, player_name) VALUES (?, ?)', [gameId, playerName]);
 }
+
+
+exports.getActiveGameIdByCode = (gameCode) => {
+    return db.query('SELECT game_id FROM games WHERE game_code = ? AND active = 1', [gameCode])
+        .then(result => { return result });
+}
+
+exports.addNewGameCode = (gameCode) => {
+    return db.query('INSERT INTO games (game_code) VALUES (?)', [gameCode]);
+}
+
+

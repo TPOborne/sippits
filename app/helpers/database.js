@@ -61,7 +61,8 @@ exports.query = (query, params) => {
       if ( err ) {
         reject(err);
       }
-      resolve( ((result) && (result.length > 0)) ? result : '');
+      resolve([result || [], fields || []]);
+      // resolve( ((result) && (result.length > 0)) ? result : '');
     });
   });
 }
