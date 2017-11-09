@@ -32,7 +32,7 @@ exports.getActiveGameIdByCode = (gameCode) => {
         .then(result => { return result });
 }
 
-exports.addNewGameCode = (gameCode) => {
+exports.insertNewGame = (gameCode) => {
     return db.query('INSERT INTO games (game_code) VALUES (?)', [gameCode]);
 }
 

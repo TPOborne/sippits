@@ -53,7 +53,7 @@ module.exports = app => {
           return Promise.reject('Game with that code currently in use');
         }
       })
-      .then(() =>     { return HomeModel.addNewGameCode(gameCode) })
+      .then(() =>     { return HomeModel.insertNewGame(gameCode) })
       .then(result => { return HomeModel.insertNewPlayer(result[0].insertId, name) })
       .then(() =>     { return res.send('success'); })
       .catch(error => { res.send(error); })
