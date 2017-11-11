@@ -7,7 +7,8 @@ var requirejs,require,define;!function(global,setTimeout){function commentReplac
 requirejs.config({
   baseUrl: '/scripts',
   paths: {
-    jquery: 'libs/jquery-3.2.1.min'
+    jquery: 'libs/jquery-3.2.1.min',
+    socketio:  'libs/socketio'
   }
 });
 

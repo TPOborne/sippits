@@ -12,7 +12,9 @@ const express = require("express"),
   fs = require("fs"),
   helmet = require("helmet"),
   mysql = require('mysql'),
-  db = require('./helpers/database');
+  db = require('./helpers/database'),
+  server = require('http').Server(app),
+  io = require('socket.io')(server);
 
 if ( process.env.NODE_ENV !== 'production' ) {
   const dotenv = require('dotenv');
@@ -120,7 +122,20 @@ app.use(function(err, req, res, next) {
   res.status(500).sendFile('500.html', {root: `${__dirname}/views/pages/static/`});  
 });
 
+io.on('connection', function(client) {  
+  console.log('Client connected...');
+
+  client.on('join', function(data) {
+    client.emit('messages', 'Hello from server');
+  });
+
+  client.on('newPlayerJoin', function(data) {
+    client.broadcast.emit('refreshPlayers', data);
+  });
+
+});
+
 // start server
-app.listen(app.get("port"), () => {
+server.listen(app.get("port"), () => {
   console.log(`Server running on port ${app.get("port")}`);
 });
