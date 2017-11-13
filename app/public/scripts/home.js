@@ -1,12 +1,5 @@
 require(['jquery', 'socketio'], function ($, io) {
 
-	var players = [];
-
-	function playerObj(id, name) {
-		this.id = id;
-		this.name = name;
-	}
-
 	$(document).ready(function () {
 		
 		$('#joinGame').on('click', function (e) {
@@ -29,8 +22,7 @@ require(['jquery', 'socketio'], function ($, io) {
 					$(".gameCodeWR").text(gameCode);
 					$(".loginContainer").slideUp();
 					$(".waitingRoom").slideDown();
-					$(".players").append('<li class="list-group-item">' + data.name + '</li>');
-					socket.emit('newPlayerJoin', data);
+					socket.emit('sendAddPlayer', response);
 				}
 			})
 		})
@@ -46,26 +38,17 @@ require(['jquery', 'socketio'], function ($, io) {
 				data: data,
 				success: function (response) {
 					console.log(response);
-					if ( response ) {
+					if ( response != 'error' ) {
 						$(".gameCodeWR").text(gameCode);
 						$(".loginContainer").slideUp();
 						$(".waitingRoom").slideDown();
-						$(".players").append('<li class="list-group-item">' + data.name + '</li>');
-						//add p
+						socket.emit('sendAddPlayer', response);
 					}
 				}
 			});
 		});
 
-		socket.on('refreshPlayers', function(data) {
-			console.log("received refreshPlayers");
-			$(".players").append('<li class="list-group-item">' + data.name + '</li>');		
-			console.log(players.length);
-		});
-		socket.on('addPlayer', function(data) {
-			players.push(new playersObj(data.id, data.name));
-			console.log(players);
-		});
+		
 	});
 
 	
@@ -74,19 +57,14 @@ require(['jquery', 'socketio'], function ($, io) {
     socket.on('connect', function(data) {
 		socket.emit('join', 'Hello World from client');
 	});
+
+	socket.on('addPlayer', function(data) {
+		$(".players").append('<li class="list-group-item" id="'+ data.id +'">' + data.name + '</li>');	
+	});
 	
 	socket.on('messages', function(data) {
 		console.log(data);
 	});
 
-
-	/**
-	 * new player joins on client
-	 * client sends event 
-	 * server receives event
-	 * server gets new player
-	 * server responds with nam
-	 * 
-	 */
 
 });

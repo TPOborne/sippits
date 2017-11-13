@@ -126,11 +126,13 @@ io.on('connection', function(client) {
   console.log('Client connected...');
 
   client.on('join', function(data) {
+    //get all active players and add
     client.emit('messages', 'Hello from server');
   });
 
-  client.on('newPlayerJoin', function(data) {
-    client.broadcast.emit('refreshPlayers', data);
+
+  client.on('sendAddPlayer', function(data) {
+    io.sockets.emit('addPlayer', data);
   });
 
 });

@@ -21,22 +21,25 @@ module.exports = app => {
       return false;
     }
 
-    return HomeModel.getGameIdByCode(gameCode)
-      .then(result => {
-        if ( result.length === 0 ) {
-          return res.send('Invalid Game Code'); 
-        }
-        let gameId = result[0].game_id;
-        req.session.gameId = gameId;
+    HomeModel.getGameIdByCode(gameCode)
+    .then(result => { 
+      if ( result.length === 0 ) {
+        return res.send('error: code not real');
+      } else {
+        let gameId = result[0][0].game_id;
+          console.log(gameId);
+          return HomeModel.insertNewPlayer(gameId, name)
+        .then(result => { 
+          let data = {id: result[0].insertId, name: name};
+          return res.send(data);
+        })
+      }
+    })
 
-        HomeModel.insertNewPlayer(gameId, name)
-          .then(result => { 
-            return getPlayerData(result[0].insertId, name);
-          })
-          .catch(error => { 
-            res.send('something went wrong with join'); 
-          })          
-      })
+    .catch(error => { 
+      return res.send('error: catch');
+    })
+
   });
 
   /**
@@ -52,26 +55,24 @@ module.exports = app => {
     return HomeModel.getActiveGameIdByCode(gameCode)
       .then(result => { 
         if ( result.length === 0 ) {
-          return res.send('Game with that code currently in use');
+          return res.send('error');
         }
       })
       .then(() => { 
-        return HomeModel.insertNewGame(gameCode)
+        return HomeModel.insertNewGame(gameCode);
       })
       .then(result => { 
-        return HomeModel.insertNewPlayer(result[0].insertId, name)
+        return HomeModel.insertNewPlayer(result[0].insertId, name);
       })
       .then(result => { 
-        let data = getPlayerData(result[0].insertId, name)
-        return res.send(client.emit('addPlayers', data))
+        let data = {id: result[0].insertId, name: name};
+        return res.send(data);
       })
-      
       .catch(error => { 
-        res.send(error); 
+        return res.send('error');
       })
+
+      
   });
 
-  let getPlayerData = (id, name) => {
-    return { id: id, name: name };
-  }
 }

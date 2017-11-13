@@ -11,7 +11,7 @@ exports.getPlayerDataById = (gameId) => {
 exports.getGameIdByCode = (gameCode) => {
     return db.query('SELECT game_id FROM games WHERE game_code = ?', [gameCode])
         .then( result => {
-            return result[0];
+            return result;
         });
 }
 
