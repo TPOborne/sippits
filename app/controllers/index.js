@@ -26,16 +26,16 @@ module.exports = app => {
       if ( result.length === 0 ) {
         return res.send('error: code not real');
       } else {
+        //get other users here?
         let gameId = result[0][0].game_id;
-          console.log(gameId);
-          return HomeModel.insertNewPlayer(gameId, name)
+        console.log(gameId);
+        return HomeModel.insertNewPlayer(gameId, name)
         .then(result => { 
           let data = {id: result[0].insertId, name: name};
           return res.send(data);
         })
       }
     })
-
     .catch(error => { 
       return res.send('error: catch');
     })

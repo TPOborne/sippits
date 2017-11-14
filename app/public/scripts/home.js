@@ -1,4 +1,19 @@
+function PlayerModel() {
+	var self = this;
+	self.players = [];
+}
+
+function Player(playerDetails) {
+	var self = this;
+	self.id = playerDetails.id;
+	self.name = playerDetails.name;
+}
+
+var playerModel = new PlayerModel();
+
 require(['jquery', 'socketio'], function ($, io) {
+
+	
 
 	$(document).ready(function () {
 		
@@ -60,6 +75,7 @@ require(['jquery', 'socketio'], function ($, io) {
 
 	socket.on('addPlayer', function(data) {
 		$(".players").append('<li class="list-group-item" id="'+ data.id +'">' + data.name + '</li>');	
+		playerModel.players.push(new Player(data));
 	});
 	
 	socket.on('messages', function(data) {
