@@ -21,7 +21,7 @@ module.exports = app => {
       return false;
     }
 
-    HomeModel.getGameIdByCode(gameCode)
+    HomeModel.getActiveGameIdByCode(gameCode)
     .then(result => { 
       if ( result.length === 0 ) {
         return res.send('error: code not real');
@@ -63,6 +63,9 @@ module.exports = app => {
    * Creating a new game
    */
   app.post('/create', (req, res, next) => {
+    let data = {};
+    let errors = {error: false, errorMsg: ""};
+    let response = {errors: errors, data: data};
     let { gameCode, name } = req.body; 
 
     if ( gameCode === '' || name === '' ) {
@@ -71,24 +74,29 @@ module.exports = app => {
     
     return HomeModel.getActiveGameIdByCode(gameCode)
       .then(result => { 
-        if ( result.length === 0 ) {
-          return res.send('error');
+        console.log(result[0].length);
+        if (result[0].length !== 0) {
+          //cretae game
+          response.errors.error = true;
+          response.errors.errorMsg = "game code in use";
+          return res.send(response);
+        } else {
+          return HomeModel.insertNewGame(gameCode)
+          .then(result => { 
+            return HomeModel.insertNewPlayer(result[0].insertId, name);
+          })
+          .then(result => { 
+            let data = {player_id: result[0].insertId, player_name: name};
+            response.data = data;
+            return res.send(response);
+          })
         }
       })
-      .then(() => { 
-        return HomeModel.insertNewGame(gameCode);
-      })
-      .then(result => { 
-        return HomeModel.insertNewPlayer(result[0].insertId, name);
-      })
-      .then(result => { 
-        let data = {player_id: result[0].insertId, player_name: name};
-        return res.send(data);
-      })
       .catch(error => { 
-        return res.send('error');
+        response.errors.error = true;
+        response.errors.errorMsg = "catch";
+        return res.send(respose);
       })
-
       
   });
 

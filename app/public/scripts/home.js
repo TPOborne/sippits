@@ -1,6 +1,7 @@
 function PlayerModel() {
 	var self = this;
 	self.players = [];
+
 }
 
 function Player(playerDetails) {
@@ -9,11 +10,10 @@ function Player(playerDetails) {
 	self.name = playerDetails.player_name;
 }
 
+
 var playerModel = new PlayerModel();
 
 require(['jquery', 'socketio'], function ($, io) {
-
-	
 
 	$(document).ready(function () {
 		
@@ -66,11 +66,13 @@ require(['jquery', 'socketio'], function ($, io) {
 				data: data,
 				success: function (response) {
 					console.log(response);
-					if ( response != 'error' ) {
+					if ( response.errors.error == false ) {
 						$(".gameCodeWR").text(gameCode);
 						$(".loginContainer").slideUp();
 						$(".waitingRoom").slideDown();
-						socket.emit('sendAddPlayer', response);
+						socket.emit('sendAddPlayer', response.data);
+					} else {
+						console.log(response.errors.errorMsg);
 					}
 				}
 			});
