@@ -26,12 +26,11 @@ module.exports = app => {
       if ( result.length === 0 ) {
         return res.send('error: code not real');
       } else {
-        //get other users here?
         let gameId = result[0][0].game_id;
         console.log(gameId);
         return HomeModel.insertNewPlayer(gameId, name)
         .then(result => { 
-          let data = {id: result[0].insertId, name: name};
+          let data = {player_id: result[0].insertId, player_name: name};
           return res.send(data);
         })
       }
@@ -42,6 +41,24 @@ module.exports = app => {
 
   });
 
+  /**
+   * Get Players
+   */
+  app.post('/getPlayers', (req, res, next) => {
+    let { gameCode, name } = req.body;
+    HomeModel.getGameIdByCode(gameCode)
+    .then(result => { 
+      if ( result.length === 0 ) {
+        return res.send('error: code not real');
+      } else {
+        let gameId = result[0][0].game_id;
+        return HomeModel.getPlayerDataById(gameId)
+        .then (result => {
+          return res.send(result[0]);
+        })
+      }
+    })
+  });
   /**
    * Creating a new game
    */
@@ -65,7 +82,7 @@ module.exports = app => {
         return HomeModel.insertNewPlayer(result[0].insertId, name);
       })
       .then(result => { 
-        let data = {id: result[0].insertId, name: name};
+        let data = {player_id: result[0].insertId, player_name: name};
         return res.send(data);
       })
       .catch(error => { 

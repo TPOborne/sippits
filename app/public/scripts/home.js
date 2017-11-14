@@ -5,8 +5,8 @@ function PlayerModel() {
 
 function Player(playerDetails) {
 	var self = this;
-	self.id = playerDetails.id;
-	self.name = playerDetails.name;
+	self.id = playerDetails.player_id;
+	self.name = playerDetails.player_name;
 }
 
 var playerModel = new PlayerModel();
@@ -27,6 +27,19 @@ require(['jquery', 'socketio'], function ($, io) {
 				gameCode: gameCode,
 				name: name
 			}
+
+			$.ajax({
+				url: '/getPlayers',
+				type: 'post',
+				data: data,
+				success: function (response) {
+					response.forEach(function(player){
+						console.log(player);
+						$(".players").append('<li class="list-group-item" id="'+ player.player_id +'">' + player.player_name + '</li>');	
+						playerModel.players.push(new Player(player));
+					});
+				}
+			})
 
 			$.ajax({
 				url: '/join',
@@ -74,7 +87,7 @@ require(['jquery', 'socketio'], function ($, io) {
 	});
 
 	socket.on('addPlayer', function(data) {
-		$(".players").append('<li class="list-group-item" id="'+ data.id +'">' + data.name + '</li>');	
+		$(".players").append('<li class="list-group-item" id="'+ data.player_id +'">' + data.player_name + '</li>');	
 		playerModel.players.push(new Player(data));
 	});
 	
