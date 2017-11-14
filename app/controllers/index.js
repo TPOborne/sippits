@@ -69,7 +69,9 @@ module.exports = app => {
     let { gameCode, name } = req.body; 
 
     if ( gameCode === '' || name === '' ) {
-      return false;
+      response.errors.error = true;
+      response.errors.errorMsg = "one or more fields are blank";
+      return res.send(response);
     }
     
     return HomeModel.getActiveGameIdByCode(gameCode)
