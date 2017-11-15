@@ -21,14 +21,25 @@ body {
 .waitingRoom {
   height: 100%;
   padding: 10px;
-  background: #33bf6a;
+  background: #004346;
   display: none;
+  .gameCodeWR {
+    text-align: center;
+    color: #09BC8A;
+  }
+  
+}
+#startGame {
+  display: none;
+  position: absolute;
+  bottom: 10px;
+  width: calc(100% - 20px);
 }
 
 .nightMode {
   height: 100%;
   padding: 10px;
-  background: #111;
+  background: #172A3A;
   color: #fff;
   display: none;
 }
@@ -36,11 +47,15 @@ body {
 .dayMode {
   height: 100%;
   padding: 10px;
-  background: #33B0FF;
-  color: #000;
+  background: #75DDDD;
+  color: #508991;
   display: none;
+}
+.btn-secondary {
+  background: #09BC8A;
 }
 
 input {
   text-transform: uppercase;
 }
+

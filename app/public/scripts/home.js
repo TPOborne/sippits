@@ -2,6 +2,7 @@ function PlayerModel() {
 	var self = this;
 	self.start = false;
 	self.gameCode = "";
+	self.host = false;
 	self.players = [];
 }
 
@@ -71,9 +72,11 @@ require(['jquery', 'socketio'], function ($, io) {
 					if ( response.errors.error == false ) {
 						playerModel.start = true;
 						playerModel.gameCode = data.gameCode;
+						playerModel.host = true;
 						$(".gameCodeWR").text(gameCode);
 						$(".loginContainer").slideUp();
 						$(".waitingRoom").slideDown();
+						$("#startGame").fadeIn();
 						socket.emit('sendAddPlayer', response.data);
 					} else {
 						console.log(response.errors.errorMsg);
