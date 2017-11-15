@@ -15,28 +15,38 @@ module.exports = app => {
    * Joining an existing game
    */
   app.post('/join', (req, res, next) => {
+    let data = {};
+    let errors = {error: false, errorMsg: ""};
+    let response = {errors: errors, data: data};
     let { gameCode, name } = req.body;
 
     if ( gameCode === '' || name === '' ) {
-      return false;
+      response.errors.error = true;
+      response.errors.errorMsg = "game code or name is empty";
+      return res.send(response);
     }
 
     HomeModel.getActiveGameIdByCode(gameCode)
     .then(result => { 
       if ( result.length === 0 ) {
-        return res.send('error: code not real');
+        response.errors.error = true;
+        response.errors.errorMsg = "code not real";
+        return res.send(response);
       } else {
         let gameId = result[0][0].game_id;
         console.log(gameId);
         return HomeModel.insertNewPlayer(gameId, name)
         .then(result => { 
           let data = {player_id: result[0].insertId, player_name: name, gameCode: gameCode};
-          return res.send(data);
+          response.data = data;
+          return res.send(response);
         })
       }
     })
     .catch(error => { 
-      return res.send('error: catch');
+      response.errors.error = true;
+      response.errors.errorMsg = "catch";
+      return res.send(response);
     })
 
   });

@@ -9,9 +9,7 @@ function Player(playerDetails) {
 	var self = this;
 	self.id = playerDetails.player_id;
 	self.name = playerDetails.player_name;
-	self.gameCode = playerDetails.gameCode;
 }
-
 
 var playerModel = new PlayerModel();
 
@@ -22,8 +20,8 @@ require(['jquery', 'socketio'], function ($, io) {
 		$('#joinGame').on('click', function (e) {
 			e.preventDefault();
 			
-			var gameCode = $('#gameCode').val();
-			var name = $('#name').val();
+			var gameCode = $('#gameCode').val().toUpperCase();
+			var name = $('#name').val().toUpperCase();
 
 			var data = {
 				gameCode: gameCode,
@@ -36,9 +34,7 @@ require(['jquery', 'socketio'], function ($, io) {
 				data: data,
 				success: function (response) {
 					response.forEach(function(player){
-						console.log(player);
-						$(".players").append('<li class="list-group-item" id="'+ player.player_id +'">' + player.player_name + '</li>');	
-						playerModel.players.push(new Player(player));
+						appendPlayer(player);
 					});
 				}
 			})
@@ -48,28 +44,30 @@ require(['jquery', 'socketio'], function ($, io) {
 				type: 'post',
 				data: data,
 				success: function (response) {
-					playerModel.start = true;
-					playerModel.gameCode = data.gameCode;
-					console.log(response);
-					$(".gameCodeWR").text(gameCode);
-					$(".loginContainer").slideUp();
-					$(".waitingRoom").slideDown();
-					socket.emit('sendAddPlayer', response);
+					if ( response.errors.error == false ) {
+						playerModel.start = true;
+						playerModel.gameCode = data.gameCode;
+						$(".gameCodeWR").text(gameCode);
+						$(".loginContainer").slideUp();
+						$(".waitingRoom").slideDown();
+						socket.emit('sendAddPlayer', response.data);
+					} else {
+						console.log(response.errors.errorMsg);
+					}
 				}
 			})
 		})
 
 		$("#createGame").click(function (event) {
 			event.preventDefault();
-			var gameCode = $("#gameCode").val();
-			var name = $("#name").val();
+			var gameCode = $("#gameCode").val().toUpperCase();
+			var name = $("#name").val().toUpperCase();
 			var data = { gameCode: gameCode, name: name };
 			$.ajax({
 				url: "/create",
 				type: "post",
 				data: data,
 				success: function (response) {
-					console.log(response);
 					if ( response.errors.error == false ) {
 						playerModel.start = true;
 						playerModel.gameCode = data.gameCode;
@@ -96,8 +94,7 @@ require(['jquery', 'socketio'], function ($, io) {
 	socket.on('addPlayer', function(data) {
 		if (playerModel.start) {
 			if (playerModel.gameCode == data.gameCode) {
-				$(".players").append('<li class="list-group-item" id="'+ data.player_id +'">' + data.player_name + '</li>');	
-				playerModel.players.push(new Player(data));
+				appendPlayer(data);
 			}
 		}
 	});
@@ -106,5 +103,9 @@ require(['jquery', 'socketio'], function ($, io) {
 		console.log(data);
 	});
 
+	function appendPlayer(data) {
+		$(".players").append('<li class="list-group-item" id="'+ data.player_id +'">' + data.player_name + '</li>');	
+		playerModel.players.push(new Player(data));
+	}
 
 });

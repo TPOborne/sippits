@@ -49,4 +49,7 @@ body {
   color: #000;
   display: none; }
 
+input {
+  text-transform: uppercase; }
+
 /*# sourceMappingURL=core.css.map */
