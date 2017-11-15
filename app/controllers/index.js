@@ -30,7 +30,7 @@ module.exports = app => {
         console.log(gameId);
         return HomeModel.insertNewPlayer(gameId, name)
         .then(result => { 
-          let data = {player_id: result[0].insertId, player_name: name};
+          let data = {player_id: result[0].insertId, player_name: name, gameCode: gameCode};
           return res.send(data);
         })
       }
@@ -88,7 +88,7 @@ module.exports = app => {
             return HomeModel.insertNewPlayer(result[0].insertId, name);
           })
           .then(result => { 
-            let data = {player_id: result[0].insertId, player_name: name};
+            let data = {player_id: result[0].insertId, player_name: name, gameCode: gameCode};
             response.data = data;
             return res.send(response);
           })

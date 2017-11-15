@@ -130,7 +130,6 @@ io.on('connection', function(client) {
     client.emit('messages', 'Hello from server');
   });
 
-
   client.on('sendAddPlayer', function(data) {
     io.sockets.emit('addPlayer', data);
   });

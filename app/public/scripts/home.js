@@ -1,13 +1,15 @@
 function PlayerModel() {
 	var self = this;
+	self.start = false;
+	self.gameCode = "";
 	self.players = [];
-
 }
 
 function Player(playerDetails) {
 	var self = this;
 	self.id = playerDetails.player_id;
 	self.name = playerDetails.player_name;
+	self.gameCode = playerDetails.gameCode;
 }
 
 
@@ -46,6 +48,8 @@ require(['jquery', 'socketio'], function ($, io) {
 				type: 'post',
 				data: data,
 				success: function (response) {
+					playerModel.start = true;
+					playerModel.gameCode = data.gameCode;
 					console.log(response);
 					$(".gameCodeWR").text(gameCode);
 					$(".loginContainer").slideUp();
@@ -67,6 +71,8 @@ require(['jquery', 'socketio'], function ($, io) {
 				success: function (response) {
 					console.log(response);
 					if ( response.errors.error == false ) {
+						playerModel.start = true;
+						playerModel.gameCode = data.gameCode;
 						$(".gameCodeWR").text(gameCode);
 						$(".loginContainer").slideUp();
 						$(".waitingRoom").slideDown();
@@ -81,7 +87,6 @@ require(['jquery', 'socketio'], function ($, io) {
 		
 	});
 
-	
 
 	var socket = io.connect('http://localhost:5000/');
     socket.on('connect', function(data) {
@@ -89,8 +94,12 @@ require(['jquery', 'socketio'], function ($, io) {
 	});
 
 	socket.on('addPlayer', function(data) {
-		$(".players").append('<li class="list-group-item" id="'+ data.player_id +'">' + data.player_name + '</li>');	
-		playerModel.players.push(new Player(data));
+		if (playerModel.start) {
+			if (playerModel.gameCode == data.gameCode) {
+				$(".players").append('<li class="list-group-item" id="'+ data.player_id +'">' + data.player_name + '</li>');	
+				playerModel.players.push(new Player(data));
+			}
+		}
 	});
 	
 	socket.on('messages', function(data) {
