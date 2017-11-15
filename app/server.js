@@ -13,6 +13,7 @@ const express = require("express"),
   helmet = require("helmet"),
   mysql = require('mysql'),
   db = require('./helpers/database'),
+  HomeModel = require('./models/home'),
   server = require('http').Server(app),
   io = require('socket.io')(server);
 
@@ -132,6 +133,11 @@ io.on('connection', function(client) {
 
   client.on('sendAddPlayer', function(data) {
     io.sockets.emit('addPlayer', data);
+  });
+
+  client.on('gameStart', function(data) {
+    HomeModel.setGameInProgress(data.gameId);
+    io.sockets.emit('startGame', data);
   });
 
 });

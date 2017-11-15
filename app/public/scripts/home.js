@@ -1,7 +1,8 @@
-function PlayerModel() {
+function GameModel() {
 	var self = this;
 	self.start = false;
 	self.gameCode = "";
+	self.gameId = "";
 	self.host = false;
 	self.players = [];
 }
@@ -12,7 +13,7 @@ function Player(playerDetails) {
 	self.name = playerDetails.player_name;
 }
 
-var playerModel = new PlayerModel();
+var gameModel = new GameModel();
 
 require(['jquery', 'socketio'], function ($, io) {
 
@@ -46,8 +47,9 @@ require(['jquery', 'socketio'], function ($, io) {
 				data: data,
 				success: function (response) {
 					if ( response.errors.error == false ) {
-						playerModel.start = true;
-						playerModel.gameCode = data.gameCode;
+						gameModel.start = true;
+						gameModel.gameCode = data.gameCode;
+						gameModel.gameId = response.data.gameId;
 						$(".gameCodeWR").text(gameCode);
 						$(".loginContainer").slideUp();
 						$(".waitingRoom").slideDown();
@@ -70,9 +72,10 @@ require(['jquery', 'socketio'], function ($, io) {
 				data: data,
 				success: function (response) {
 					if ( response.errors.error == false ) {
-						playerModel.start = true;
-						playerModel.gameCode = data.gameCode;
-						playerModel.host = true;
+						gameModel.start = true;
+						gameModel.gameCode = data.gameCode;
+						gameModel.host = true;
+						gameModel.gameId = response.data.gameId;
 						$(".gameCodeWR").text(gameCode);
 						$(".loginContainer").slideUp();
 						$(".waitingRoom").slideDown();
@@ -85,20 +88,33 @@ require(['jquery', 'socketio'], function ($, io) {
 			});
 		});
 
+		$("#startGame").click(function (event) {
+			var data = {gameId: gameModel.gameId};
+			socket.emit('gameStart', data);
+		});
+
 		
 	});
 
 
 	var socket = io.connect('http://localhost:5000/');
+
     socket.on('connect', function(data) {
 		socket.emit('join', 'Hello World from client');
 	});
 
 	socket.on('addPlayer', function(data) {
-		if (playerModel.start) {
-			if (playerModel.gameCode == data.gameCode) {
+		if (gameModel.start) {
+			if (gameModel.gameCode == data.gameCode) {
 				appendPlayer(data);
 			}
+		}
+	});
+
+	socket.on('startGame', function(data) {
+		if (gameModel.gameId == data.gameId) {
+			$(".waitingRoom").slideUp();
+			$(".dayMode").slideDown();
 		}
 	});
 	
@@ -108,7 +124,7 @@ require(['jquery', 'socketio'], function ($, io) {
 
 	function appendPlayer(data) {
 		$(".players").append('<li class="list-group-item" id="'+ data.player_id +'">' + data.player_name + '</li>');	
-		playerModel.players.push(new Player(data));
+		gameModel.players.push(new Player(data));
 	}
 
 });

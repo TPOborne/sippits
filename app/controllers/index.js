@@ -34,10 +34,9 @@ module.exports = app => {
         return res.send(response);
       } else {
         let gameId = result[0][0].game_id;
-        console.log(gameId);
         return HomeModel.insertNewPlayer(gameId, name)
         .then(result => { 
-          let data = {player_id: result[0].insertId, player_name: name, gameCode: gameCode};
+          let data = {player_id: result[0].insertId, player_name: name, gameCode: gameCode, gameId: gameId};
           response.data = data;
           return res.send(response);
         })
@@ -76,6 +75,7 @@ module.exports = app => {
     let data = {};
     let errors = {error: false, errorMsg: ""};
     let response = {errors: errors, data: data};
+    let gameId = 0;
     let { gameCode, name } = req.body; 
 
     if ( gameCode === '' || name === '' ) {
@@ -88,17 +88,18 @@ module.exports = app => {
       .then(result => { 
         console.log(result[0].length);
         if (result[0].length !== 0) {
-          //cretae game
+          //create game
           response.errors.error = true;
           response.errors.errorMsg = "game code in use";
           return res.send(response);
         } else {
           return HomeModel.insertNewGame(gameCode)
-          .then(result => { 
-            return HomeModel.insertNewPlayer(result[0].insertId, name);
+          .then(result => {
+            gameId = result[0].insertId;
+            return HomeModel.insertNewPlayer(gameId, name);
           })
           .then(result => { 
-            let data = {player_id: result[0].insertId, player_name: name, gameCode: gameCode};
+            let data = {player_id: result[0].insertId, player_name: name, gameCode: gameCode, gameId: gameId};
             response.data = data;
             return res.send(response);
           })
