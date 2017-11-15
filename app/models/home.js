@@ -37,6 +37,6 @@ exports.insertNewGame = (gameCode) => {
 }
 
 exports.setGameInProgress = (gameId) => {
-    db.query('UPDATE games SET in_progress = 1 WHERE game_id = (?)', [gameId]);
+    return db.query('UPDATE games SET in_progress = 1 WHERE game_id = (?)', [gameId]);
 }
 

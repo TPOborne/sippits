@@ -21,44 +21,14 @@ require(['jquery', 'socketio'], function ($, io) {
 		
 		$('#joinGame').on('click', function (e) {
 			e.preventDefault();
-			
 			var gameCode = $('#gameCode').val().toUpperCase();
 			var name = $('#name').val().toUpperCase();
-
 			var data = {
 				gameCode: gameCode,
 				name: name
 			}
-
-			$.ajax({
-				url: '/getPlayers',
-				type: 'post',
-				data: data,
-				success: function (response) {
-					response.forEach(function(player){
-						appendPlayer(player);
-					});
-				}
-			})
-
-			$.ajax({
-				url: '/join',
-				type: 'post',
-				data: data,
-				success: function (response) {
-					if ( response.errors.error == false ) {
-						gameModel.start = true;
-						gameModel.gameCode = data.gameCode;
-						gameModel.gameId = response.data.gameId;
-						$(".gameCodeWR").text(gameCode);
-						$(".loginContainer").slideUp();
-						$(".waitingRoom").slideDown();
-						socket.emit('sendAddPlayer', response.data);
-					} else {
-						console.log(response.errors.errorMsg);
-					}
-				}
-			})
+			socket.emit('s_getPlayers', data);
+			socket.emit('s_joinGame', data);
 		})
 
 		$("#createGame").click(function (event) {
@@ -66,31 +36,12 @@ require(['jquery', 'socketio'], function ($, io) {
 			var gameCode = $("#gameCode").val().toUpperCase();
 			var name = $("#name").val().toUpperCase();
 			var data = { gameCode: gameCode, name: name };
-			$.ajax({
-				url: "/create",
-				type: "post",
-				data: data,
-				success: function (response) {
-					if ( response.errors.error == false ) {
-						gameModel.start = true;
-						gameModel.gameCode = data.gameCode;
-						gameModel.host = true;
-						gameModel.gameId = response.data.gameId;
-						$(".gameCodeWR").text(gameCode);
-						$(".loginContainer").slideUp();
-						$(".waitingRoom").slideDown();
-						$("#startGame").fadeIn();
-						socket.emit('sendAddPlayer', response.data);
-					} else {
-						console.log(response.errors.errorMsg);
-					}
-				}
-			});
+			socket.emit('s_createGame', data);
 		});
 
 		$("#startGame").click(function (event) {
 			var data = {gameId: gameModel.gameId};
-			socket.emit('gameStart', data);
+			socket.emit('s_startGame', data);
 		});
 
 		
@@ -100,7 +51,7 @@ require(['jquery', 'socketio'], function ($, io) {
 	var socket = io.connect('http://localhost:5000/');
 
     socket.on('connect', function(data) {
-		socket.emit('join', 'Hello World from client');
+		socket.emit('s_join', 'Hello World from client');
 	});
 
 	socket.on('addPlayer', function(data) {
@@ -112,9 +63,48 @@ require(['jquery', 'socketio'], function ($, io) {
 	});
 
 	socket.on('startGame', function(data) {
+		console.log(data);
 		if (gameModel.gameId == data.gameId) {
 			$(".waitingRoom").slideUp();
 			$(".dayMode").slideDown();
+		}
+	});
+
+	socket.on('createGame', function(response) {
+		console.log(response);
+		if ( response.errors.error == false ) {
+			gameModel.start = true;
+			gameModel.host = true;
+			gameModel.gameCode = response.data.gameCode;
+			gameModel.gameId = response.data.gameId;
+			$(".gameCodeWR").text(gameModel.gameCode);
+			$(".loginContainer").slideUp();
+			$(".waitingRoom").slideDown();
+			$("#startGame").fadeIn();
+			appendPlayer(response.data);
+		} else {
+			console.log(response.errors.errorMsg);
+		}
+	});
+
+	socket.on('getPlayers', function(response) {
+		response.forEach(function(player){
+			appendPlayer(player);
+		});
+	});
+
+	socket.on('joinGame', function(response) {
+		console.log(response);
+		if ( response.errors.error == false ) {
+			gameModel.start = true;
+			gameModel.gameCode = response.data.gameCode;
+			gameModel.gameId = response.data.gameId;
+			$(".gameCodeWR").text(gameModel.gameCode);
+			$(".loginContainer").slideUp();
+			$(".waitingRoom").slideDown();
+			socket.emit('s_addPlayer', response.data);
+		} else {
+			console.log(response.errors.errorMsg);
 		}
 	});
 	

@@ -14,6 +14,7 @@ const express = require("express"),
   mysql = require('mysql'),
   db = require('./helpers/database'),
   HomeModel = require('./models/home'),
+  BrainModel = require('./models/brain'),
   server = require('http').Server(app),
   io = require('socket.io')(server);
 
@@ -126,18 +127,41 @@ app.use(function(err, req, res, next) {
 io.on('connection', function(client) {  
   console.log('Client connected...');
 
-  client.on('join', function(data) {
+  client.on('s_join', function(data) {
     //get all active players and add
     client.emit('messages', 'Hello from server');
   });
 
-  client.on('sendAddPlayer', function(data) {
+  client.on('s_addPlayer', function(data) {
     io.sockets.emit('addPlayer', data);
   });
 
-  client.on('gameStart', function(data) {
-    HomeModel.setGameInProgress(data.gameId);
-    io.sockets.emit('startGame', data);
+  client.on('s_startGame', function(data) {
+    BrainModel.setGameInProgress(data)
+    .then( result => {
+      io.sockets.emit('startGame', data);
+    });
+  });
+
+  client.on('s_createGame', function(data) {
+    BrainModel.createGame(data)
+    .then( result => {
+      client.emit('createGame', result);
+    });
+  });
+
+  client.on('s_getPlayers', function(data) {
+    BrainModel.getPlayers(data)
+    .then( result => {
+      client.emit('getPlayers', result);
+    });
+  });
+
+  client.on('s_joinGame', function(data) {
+    BrainModel.joinGame(data)
+    .then( result => {
+      client.emit('joinGame', result);
+    });
   });
 
 });
