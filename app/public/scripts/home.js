@@ -5,6 +5,9 @@ function GameModel() {
 	self.gameId = "";
 	self.host = false;
 	self.players = [];
+	self.day = 0;
+	self.myPlayerId = 0;
+	self.myCharId = 0;
 }
 
 function Player(playerDetails) {
@@ -29,7 +32,7 @@ require(['jquery', 'socketio'], function ($, io) {
 			}
 			socket.emit('s_getPlayers', data);
 			socket.emit('s_joinGame', data);
-		})
+		});
 
 		$("#createGame").click(function (event) {
 			event.preventDefault();
@@ -40,8 +43,18 @@ require(['jquery', 'socketio'], function ($, io) {
 		});
 
 		$("#startGame").click(function (event) {
-			var data = {gameId: gameModel.gameId};
+			var data = {gameId: gameModel.gameId, players: gameModel.players};
 			socket.emit('s_startGame', data);
+		});
+
+		$("#enterNight").click(function (event) {
+			var data = {gameId: gameModel.gameId}
+			socket.emit('s_enterNight', data);
+		});
+
+		$("#enterDay").click(function (event) {
+			var data = {gameId: gameModel.gameId}
+			socket.emit('s_enterDay', data);
 		});
 
 		
@@ -62,11 +75,22 @@ require(['jquery', 'socketio'], function ($, io) {
 		}
 	});
 
-	socket.on('startGame', function(data) {
-		console.log(data);
-		if (gameModel.gameId == data.gameId) {
+	socket.on('startGame', function(response) {
+		let gameData = response.gameData;
+		if (gameModel.gameId == gameData.gameId) {
+			let playerData = response.playerData;
+			for (i = 0; i < playerData.players.length; i++) { 
+				if (playerData.players.id == gameModel.myPlayerId) {
+					gameModel.myCharId = playerData.chars[i];
+				}
+			}
 			$(".waitingRoom").slideUp();
 			$(".dayMode").slideDown();
+			gameModel.day++;
+			$(".title").text("Day " + gameModel.day);
+			if (gameModel.host == true) {
+				$("#enterNight").fadeIn();
+			}
 		}
 	});
 
@@ -77,7 +101,8 @@ require(['jquery', 'socketio'], function ($, io) {
 			gameModel.host = true;
 			gameModel.gameCode = response.data.gameCode;
 			gameModel.gameId = response.data.gameId;
-			$(".gameCodeWR").text(gameModel.gameCode);
+			gameModel.myPlayerId = response.data.player_id;
+			$(".title").text(gameModel.gameCode);
 			$(".loginContainer").slideUp();
 			$(".waitingRoom").slideDown();
 			$("#startGame").fadeIn();
@@ -99,12 +124,36 @@ require(['jquery', 'socketio'], function ($, io) {
 			gameModel.start = true;
 			gameModel.gameCode = response.data.gameCode;
 			gameModel.gameId = response.data.gameId;
-			$(".gameCodeWR").text(gameModel.gameCode);
+			gameModel.myPlayerId = response.data.player_id;
+			$(".title").text(gameModel.gameCode);
 			$(".loginContainer").slideUp();
 			$(".waitingRoom").slideDown();
 			socket.emit('s_addPlayer', response.data);
 		} else {
 			console.log(response.errors.errorMsg);
+		}
+	});
+
+	socket.on('enterNight', function(response) {
+		if (response.gameId == gameModel.gameId) {
+			$(".title").text("Night " + gameModel.day);
+			$(".dayMode").slideUp();
+			$(".nightMode").slideDown();
+			if (gameModel.host == true) {
+				$("#enterDay").fadeIn();
+			}
+		}
+	});
+
+	socket.on('enterDay', function(response) {
+		if (response.gameId == gameModel.gameId) {
+			gameModel.day++;
+			$(".title").text("Day " + gameModel.day);
+			$(".nightMode").slideUp();
+			$(".dayMode").slideDown();
+			if (gameModel.host == true) {
+				$("#enterNight").fadeIn();
+			}
 		}
 	});
 	

@@ -110,3 +110,36 @@ exports.joinGame = (details) => {
     })
 
 }
+
+exports.generateCharacters = (details) => {
+    let players = details.players;
+    let chars = [];
+    let poppedChars = [];
+    let response = {players: players, chars: poppedChars};
+    return HomeModel.getAllCharacters()
+    .then(result => { 
+        let numberOfChars = result[0].length;
+        result[0].forEach(function (char) {
+            chars.push(char.character_id);
+        });
+        shuffleArray(chars);
+        players.forEach(function(player) {
+            let playerId = player.id;
+            let charId = chars.pop();
+            poppedChars.push(charId);
+            console.log("addign char " + charId + " to player " + playerId);
+            HomeModel.assignCharToPlayer(charId, playerId);
+        });
+        return response;
+    })
+    .catch(error => {
+        return response;
+    })
+}
+
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}

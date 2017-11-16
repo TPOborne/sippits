@@ -40,3 +40,11 @@ exports.setGameInProgress = (gameId) => {
     return db.query('UPDATE games SET in_progress = 1 WHERE game_id = (?)', [gameId]);
 }
 
+exports.getAllCharacters = () => {
+    return db.query("SELECT * FROM characters");
+}
+
+exports.assignCharToPlayer = (charId, playerId) => {
+    return db.query('UPDATE players SET character_id = ? WHERE player_id = ?', [charId, playerId]);
+}
+

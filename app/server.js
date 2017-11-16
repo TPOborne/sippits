@@ -128,7 +128,6 @@ io.on('connection', function(client) {
   console.log('Client connected...');
 
   client.on('s_join', function(data) {
-    //get all active players and add
     client.emit('messages', 'Hello from server');
   });
 
@@ -138,8 +137,13 @@ io.on('connection', function(client) {
 
   client.on('s_startGame', function(data) {
     BrainModel.setGameInProgress(data)
-    .then( result => {
-      io.sockets.emit('startGame', data);
+    .then( () => {
+      BrainModel.generateCharacters(data)
+      .then ( result => {
+        console.log(result);
+        let response = {gameData: data, playerData: result};
+        io.sockets.emit('startGame', response);
+      })
     });
   });
 
@@ -162,6 +166,14 @@ io.on('connection', function(client) {
     .then( result => {
       client.emit('joinGame', result);
     });
+  });
+
+  client.on('s_enterNight', function(data) {
+    io.sockets.emit('enterNight', data);
+  });
+
+  client.on('s_enterDay', function(data) {
+    io.sockets.emit('enterDay', data);
   });
 
 });

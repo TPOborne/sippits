@@ -6,6 +6,10 @@ body {
   height: 100%;
 }
 
+h2 {
+  text-align: center;
+}
+
 .contents {
   width: 100%;
   height: 100%;
@@ -22,13 +26,12 @@ body {
   padding: 10px;
   background: #004346;
   display: none;
-  .gameCodeWR {
-    text-align: center;
+  .title {
     color: #09BC8A;
   }
 }
 
-#startGame {
+#startGame, #enterNight, #enterDay {
   display: none;
   position: absolute;
   bottom: 10px;
@@ -49,6 +52,9 @@ body {
   background: #75DDDD;
   color: #508991;
   display: none;
+  .title {
+    color: #508991;
+  }
 }
 .btn-secondary {
   background: #09BC8A;
