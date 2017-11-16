@@ -114,6 +114,7 @@ exports.joinGame = (details) => {
 exports.generateCharacters = (details) => {
     let players = details.players;
     let chars = [];
+    let tempChars = [];
     let poppedChars = [];
     let response = {players: players, chars: poppedChars};
     return HomeModel.getAllCharacters()
@@ -121,13 +122,19 @@ exports.generateCharacters = (details) => {
         let numberOfChars = result[0].length;
         result[0].forEach(function (char) {
             chars.push(char.character_id);
+            tempChars.push(char.character_id);
         });
         shuffleArray(chars);
         players.forEach(function(player) {
             let playerId = player.id;
-            let charId = chars.pop();
+            let charId = 0;
+            if (chars.length > 0) {
+                charId = chars.pop();
+            } else {
+                charId = tempChars[Math.floor(Math.random() * tempChars.length) + 1];
+            }
             poppedChars.push(charId);
-            console.log("addign char " + charId + " to player " + playerId);
+            console.log("assign char " + charId + " to player " + playerId);
             HomeModel.assignCharToPlayer(charId, playerId);
         });
         return response;
