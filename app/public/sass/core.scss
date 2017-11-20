@@ -6,7 +6,7 @@ body {
   height: 100%;
 }
 
-h2 {
+h2, h4 {
   text-align: center;
 }
 
@@ -52,9 +52,6 @@ h2 {
   background: #75DDDD;
   color: #508991;
   display: none;
-  .title {
-    color: #508991;
-  }
 }
 .btn-secondary {
   background: #09BC8A;
@@ -64,3 +61,37 @@ input {
   text-transform: uppercase;
 }
 
+.sippit_cup {
+  text-align: center;
+  background-image: url(../images/beer.svg);
+  width: 60px;
+  height: 60px;
+  margin: 0 auto;
+  color: black;
+  font-weight: bold;
+  padding-top: 13px;
+  padding-left: 4px;
+  font-size: 26px;
+  margin-bottom: 15px;
+}
+
+
+.targetPlayers {
+  .list-group-item {
+    padding: 3px 10px;
+    color: #000;
+    text-align: center;
+    &.target {
+      color: red;
+     }
+  }
+}
+
+.targetSippits {
+  width: 100%;
+}
+
+.sippitBtn {
+  padding: 3px 0px;
+  margin-left: 0px !important;
+}

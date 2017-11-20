@@ -114,14 +114,16 @@ exports.joinGame = (details) => {
 exports.generateCharacters = (details) => {
     let players = details.players;
     let chars = [];
+    let charsList = [];
     let tempChars = [];
     let poppedChars = [];
-    let response = {players: players, chars: poppedChars};
+    let response = {players: players, chars: poppedChars, charsList: charsList};
     return HomeModel.getAllCharacters()
     .then(result => { 
         let numberOfChars = result[0].length;
         result[0].forEach(function (char) {
             chars.push(char.character_id);
+            charsList.push(char);
             tempChars.push(char.character_id);
         });
         shuffleArray(chars);

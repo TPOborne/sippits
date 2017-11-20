@@ -140,7 +140,6 @@ io.on('connection', function(client) {
     .then( () => {
       BrainModel.generateCharacters(data)
       .then ( result => {
-        console.log(result);
         let response = {gameData: data, playerData: result};
         io.sockets.emit('startGame', response);
       })
@@ -148,6 +147,7 @@ io.on('connection', function(client) {
   });
 
   client.on('s_createGame', function(data) {
+    console.log("create " + data);
     BrainModel.createGame(data)
     .then( result => {
       client.emit('createGame', result);
@@ -162,6 +162,7 @@ io.on('connection', function(client) {
   });
 
   client.on('s_joinGame', function(data) {
+    console.log("join " +data);
     BrainModel.joinGame(data)
     .then( result => {
       client.emit('joinGame', result);
